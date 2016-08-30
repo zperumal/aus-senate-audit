@@ -2,14 +2,15 @@
 
 """ Implements a class for representing a real senate election. """
 
+import dividebatur.counter as cnt
+import dividebatur.senatecount as sc
 from json import load
 from random import random
 
-import dividebatur.counter as cnt
-import dividebatur.senatecount as sc
-
+from audit_info import AuditInfo
 from audit_tie_breaker import AuditTieBreaker
-from senate_election import SenateElection
+from constants import AGGREGATE_BALLOTS_FILE_NAME
+from senate_election.senate_election import SenateElection
 from real_senate_election_results import RealSenateElectionResults
 
 
@@ -28,6 +29,7 @@ class RealSenateElection(SenateElection):
         :param int max_ballots: The maximum number of ballots to check when
             performing the senate election audit (default: None).
         """
+        super(RealSenateElection, self).__init__()
         # Read the configuration file for the election data.
         election_config = sc.read_config(conf)
         self._election_id = election_config['title']
@@ -35,7 +37,6 @@ class RealSenateElection(SenateElection):
             if contest['name'] == state:
                 contest_config = contest
         self._seats = contest_config['vacancies']
-        self.remaining_tickets = []
 
         try:
             # Remove this key to suppress verification checks which would
@@ -51,7 +52,8 @@ class RealSenateElection(SenateElection):
         if max_ballots is not None:
             data_options['max_ballots'] = max_ballots
 
-        contest_config['aec-data']['all-preferences'] = 'rounds/aggregates.csv'
+        self._n = sum(1 for line in open(contest_config['aec-data']['formal-preferences'], 'r')) - 2
+        contest_config['aec-data']['formal-preferences'] = AuditInfo(state).get_audit_results_file_path(AGGREGATE_BALLOTS_FILE_NAME)
 
         # Get election data.
         self._data = sc.get_data(
@@ -63,18 +65,7 @@ class RealSenateElection(SenateElection):
 
         # Build remaining ticket data structure from tickets and randomly shuffle for sampling.
         for ticket, weight in self._data.tickets_for_count:
-            # NOTE: We expand multiplicities here such that for each ticket, there are `weight` copies of that ticket 
-            # in `self.remaining_tickets`. We do this for ease of random sampling (e.g. note that a dictionary mapping
-            # tickets to their corresponding weights does not facilitate easy random sampling).
-            for _ in range(weight):
-                if max_ballots and len(self.remaining_tickets) >= max_ballots:
-                    break
-                self.remaining_tickets.append(copy.deepcopy(ticket))
-                self.n += 1
-            if max_ballots and len(self.remaining_tickets) >= max_ballots:
-                    break
-
-        random.shuffle(self.remaining_tickets)
+            self.add_ballot(ticket, weight)
 
         # Get candidate data.
         self._candidate_ids = self._data.get_candidate_ids()
@@ -89,13 +80,8 @@ class RealSenateElection(SenateElection):
         )
 
     def draw_ballots(self, batch_size=100):
-        # Make sure not to over draw remaining ballots.
-        ballots_to_draw = min(batch_size, len(self.remaining_tickets))
-        for _ in range(ballots_to_draw):
-            # Pop off the first ticket in `self.remaining_tickets`, convert it from a ticket to a ballot,
-            # and finally add it to the growing sample of ballots.
-            self.add_ballot(self.remaining_tickets.pop(0), 1)
-        self._ballots_drawn += ballots_to_draw
+        """ """
+        pass
 
     def get_outcome(self, ballot_weights):
         """ Returns the outcome of a senate election with the given ballot 

@@ -27,7 +27,7 @@ def get_new_ballot_weights(election, r):
     new_ballot_weights = {}
     total = 0
     for ballot in election.get_ballots():
-        weight = election.get_weight_of_ballot(ballot)
+        weight = election.get_ballot_weight(ballot)
         new_ballot_weights[ballot] = gammavariate(weight, 1) if weight else 0
         total += new_ballot_weights[ballot]
     for ballot in election.get_ballots():
@@ -35,7 +35,7 @@ def get_new_ballot_weights(election, r):
     return new_ballot_weights
 
 
-def audit(election, seed, unpopular_freq_threshold, alpha=0.05, trials=100):
+def audit(election, seed, unpopular_freq_threshold, stage_counter=0, alpha=0.05, trials=100, quick=False):
     """ Runs a Bayesian audit on the given senate election.
 
     :param :class:`SenateElection` election: The senate election to audit.
@@ -69,9 +69,6 @@ def audit(election, seed, unpopular_freq_threshold, alpha=0.05, trials=100):
     # first choice vote for that candidate.
     for cid in election.get_candidate_ids():
         election.add_ballot((cid,), 1)
-
-    # Current stage of the audit.
-    stage_counter = 0
 
     # Mapping from candidates to the set of ballots that elected them.
     candidate_to_ballots_map = {}
@@ -128,7 +125,7 @@ def audit(election, seed, unpopular_freq_threshold, alpha=0.05, trials=100):
                 ]),
             ),
         )
-
+        done = False
         if freq >= trials * (1 - alpha):
             print(
                 'Stopping because audit confirmed outcome:\n',
@@ -137,24 +134,31 @@ def audit(election, seed, unpopular_freq_threshold, alpha=0.05, trials=100):
                     election.get_num_ballots_drawn(),
                 ),
             )
+            done = True
             break
 
         if election.get_num_ballots_drawn() >= election.get_num_cast_ballots():
             print('Audit has looked at all ballots. Done.')
+            done = True
             break
 
-    for cid, cid_freq in sorted(
-            candidate_outcomes.items(),
-            key=lambda x: (x[1], x[0]),
-        ):
-        if cid_freq / trials < unpopular_freq_threshold:
-            print(
-                '  One set of ballots that elected low frequency '
-                'candidate {} which occurred in {}% of outcomes\n'.format(
-                        str(cid),
-                        str(cid_freq),
-                ),
-                '  {}'.format(candidate_to_ballots_map[cid]),
-            )
+        if not quick:
+            break
+
+    if candidate_outcomes is not None and done:
+        for cid, cid_freq in sorted(
+                candidate_outcomes.items(),
+                key=lambda x: (x[1], x[0]),
+            ):
+            if cid_freq / trials < unpopular_freq_threshold:
+                print(
+                    '  One set of ballots that elected low frequency '
+                    'candidate {} which occurred in {}% of outcomes\n'.format(
+                            str(cid),
+                            str(cid_freq),
+                    ),
+                    '  {}'.format(candidate_to_ballots_map[cid]),
+                )
 
     print('Elasped time: {} seconds.'.format(time() - start_time))
+    return done

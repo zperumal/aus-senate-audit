@@ -69,7 +69,7 @@ class SenateElection(object):
         """
         return self._ballots
 
-    def get_weight_of_ballot(self, ballot):
+    def get_ballot_weight(self, ballot):
         """ Returns the weight of the given ballot type in the election.
 
         :param tuple ballot: A type of ballot.
@@ -122,11 +122,11 @@ class SenateElection(object):
         self._ballots_drawn += weight
 
     def draw_ballots(self):
-        """ """
+        """ Adds cast ballots to the growing sample for the audit. """
         raise NotImplementedError
 
     def get_outcome(self, ballot_weights):
-        """ Returns the outcome of a senate election with the given ballot 
+        """ Returns the outcome of a senate election with the given ballot
         weights.
 
         :param :class:`Counter` ballot_weights: A mapping from a ballot type
