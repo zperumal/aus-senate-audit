@@ -17,7 +17,7 @@ def get_new_ballot_weights(election, r):
     weights. The sum of the new ballot weights should be equal to :param:`r`
     (appoximately). Note that ballot weights are rounded down.
 
-    :param :class:`SenateElection` election: The senate election to generate
+    :param :class:`BaseSenateElection` election: The senate election to generate
         new ballot weights for.
     :param int r: The sum of the new ballot weights.
 
@@ -38,7 +38,7 @@ def get_new_ballot_weights(election, r):
 def audit(election, seed, unpopular_freq_threshold, stage_counter=0, alpha=0.05, trials=100, quick=False):
     """ Runs a Bayesian audit on the given senate election.
 
-    :param :class:`SenateElection` election: The senate election to audit.
+    :param :class:`BaseSenateElection` election: The senate election to audit.
     :param int seed: The seed for the random number generator.
     :param float unpopular_freq_threshold: The upper bound on the frequency of 
         trials a candidate is elected in order for the candidate to be deemed 

@@ -2,6 +2,8 @@
 
 """ Default Constants Used for the Australian Senate Election Audit. """
 
+import os
+
 
 # The modes in which to run the senate election audit.
 SIMULATION_MODE = 'simulation'
@@ -33,6 +35,9 @@ DEFAULT_UNPOPULAR_FREQUENCY_THRESHOLD = 0.03
 # audit stage.
 DEFAULT_SAMPLE_INCREMENT_SIZE = 1500
 
+#
+DEFAULT_SEED_VALUE = 1
+
 # 
 AUDIT_DIR_NAME = 'audit_{}'
 ROUND_DIR_NAME = 'rounds'
@@ -54,9 +59,26 @@ COLUMN_HEADERS = [
     'Preferences',
 ]
 
+
+COLUMN_HEADER_DELIMS = [
+    '------------',
+    '---------------------',
+    '---------------------',
+    '-------',
+    '-------',
+    '-----------',
+]
+
 # 
 MATCH_HEADERS = [
     'Match',
     'PreferencesAfterAudit',
 ]
 
+CONFIG_FILE_PATH = 'aec_fed2016.json'
+
+FORMAL_PREFERENCES_CSV_NUM_HEADER_LINES = 2
+
+AUDIT_ROUND_FILE_NAME = '{}/round_{}.csv'
+
+DATA_DIR_NAME = 'data/{}'

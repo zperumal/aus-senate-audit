@@ -4,18 +4,16 @@
 
 from argparse import ArgumentParser
 
-from constants import DEFAULT_SAMPLE_INCREMENT_SIZE
-from constants import DEFAULT_SIMULATED_SENATE_ELECTION_NUM_BALLOTS
-from constants import DEFAULT_SIMULATED_SENATE_ELECTION_NUM_CANDIDATES
-from constants import DEFAULT_UNPOPULAR_FREQUENCY_THRESHOLD
-from constants import QUICK_MODE
-from constants import REAL_MODE
-from constants import SIMULATION_MODE
-from constants import STATES
+from aus_senate_audit.constants import DEFAULT_SAMPLE_INCREMENT_SIZE
+from aus_senate_audit.constants import DEFAULT_SEED_VALUE
+from aus_senate_audit.constants import DEFAULT_SIMULATED_SENATE_ELECTION_NUM_BALLOTS
+from aus_senate_audit.constants import DEFAULT_SIMULATED_SENATE_ELECTION_NUM_CANDIDATES
+from aus_senate_audit.constants import DEFAULT_UNPOPULAR_FREQUENCY_THRESHOLD
+from aus_senate_audit.constants import QUICK_MODE
+from aus_senate_audit.constants import REAL_MODE
+from aus_senate_audit.constants import SIMULATION_MODE
+from aus_senate_audit.constants import STATES
 
-# -m simulation -s SEED --num-ballots 1000 --num-candidates 10
-# -m quick -s SEED --state TAS --max-ballots 1000 --config-file config.json
-# -m real -s SEED --state TAS --config-file config.json [--selecte-ballots-file ...]
 
 def parse_command_line_args():
     """ Parses the command line arguments for running an audit. """
@@ -25,64 +23,60 @@ def parse_command_line_args():
         type=str,
         metavar='MODE',
         choices=[QUICK_MODE, REAL_MODE, SIMULATION_MODE],
-        help='Mode in which to run the audit.',
+        help='The mode in which to run the audit.',
     )
     parser.add_argument(
         '-s',
         '--seed',
         type=int,
-        default=1,
-        help='Starting value of the random number generator.'
+        default=DEFAULT_SEED_VALUE,
+        help='The starting value of the random number generator.',
     )
     parser.add_argument(
         '--num-ballots',
         type=int,
         default=DEFAULT_SIMULATED_SENATE_ELECTION_NUM_BALLOTS,
-        help='Number of cast ballots for a simulated senate election.',
+        help='The number of ballots cast for a simulated senate election',
     )
     parser.add_argument(
         '--num-candidates',
         type=int,
         default=DEFAULT_SIMULATED_SENATE_ELECTION_NUM_CANDIDATES,
-        help='Number of candidates for a simulated senate election.',
+        help='The number of candidates for a simulated senate election.',
     )
     parser.add_argument(
         '--state',
         type=str,
         choices=STATES,
-        help='Abbreviation of state name to run senate election audit for.',
+        help='The abbreviation of the state name to run the senate election audit for.',
     )
     parser.add_argument(
-        '-c',
-        '--config-file',
+        '--selected-ballots',
         type=str,
-        help='Path to Australian senate election configuration file (see \
-        https://github.com/grahame/dividebatur/blob/master/aec_data/fed2016/\
-        aec_fed2016.json as an example).',
+        help='The path to the CSV file containing the selected ballots data.',
     )
     parser.add_argument(
-        '--sample',
-        action='store_true',
-        help='Whether to sample the remaining ballots or run a stage of the audit',
+        '--data',
+        type=str,
+        help='The path to all Australian senate election data.',
     )
     parser.add_argument(
         '--max-ballots',
         type=int,
-        help='Maximum number of ballots to check for a real senate election \
-        audit.',
+        help='The maximum number of ballots to check for a real senate election audit.',
     )
     parser.add_argument(
         '-f',
         '--unpopular-frequency-threshold',
         type=float,
         default=DEFAULT_UNPOPULAR_FREQUENCY_THRESHOLD,
-        help='Upper bound on the frequency of trials a candidate is elected \
-        in order for the candidate to be deemed unpopular.',
+        help='The minimum frequency of trials in a single audit stage a candidate must be elected in order for the \
+        candidate to be deemed unpopular (only applied on the last audit stage).',
     )
     parser.add_argument(
         '--sample-increment-size',
         type=int,
         default=DEFAULT_SAMPLE_INCREMENT_SIZE,
-        help='Number of ballots to add to growing sample.'
+        help='The number of ballots to add to the growing sample during this audit stage.',
     )
     return parser.parse_args()

@@ -56,9 +56,9 @@ Usage:
 
     .. code-block:: python3
 
-        >>> import audit_tie_breaker
-        >>> atb = AuditTieBreaker(['A', 'B', 'C', 'D', 'E', 'F', 'G'], verbose=True)
-        >>> atb.load_election(
+        >> import audit_tie_breaker
+        >> atb = AuditTieBreaker(['A', 'B', 'C', 'D', 'E', 'F', 'G'], verbose=True)
+        >> atb.load_election(
                 [   # Election Order Tie Events
                     [
                         [
@@ -100,7 +100,7 @@ Usage:
          - Exclusion tie between ['D', 'E', 'F'] broken by excluding E.
          --> Linear order is consistent with real election's tie-breaking events.
 
-        >>> atb.break_tie(['A', 'B', 'C'], 1)
+        >> atb.break_tie(['A', 'B', 'C'], 1)
          - Election order tie between ['A', 'B', 'C'] broken with permutation ['B', 'C', 'A'].
 """
 
