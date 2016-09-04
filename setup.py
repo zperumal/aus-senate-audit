@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='aus-senate-audit',
-    version='0.10.0',
+    version='0.11.0',
     license='Apache2',
     author='Berj Chilingirian',
     author_email='berjc@mit.edu',

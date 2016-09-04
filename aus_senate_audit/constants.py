@@ -16,6 +16,7 @@ STATES = [
     'NSW',
     'NT',
     'QLD',
+    'SA',
     'TAS',
     'VIC',
     'WA',
