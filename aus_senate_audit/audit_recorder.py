@@ -25,12 +25,13 @@ class AuditRecorder(object):
 
     :ivar str state: The abbreviated name of the state whose senate election is being audited.
     """
-    def __init__(self, state):
+    def __init__(self, state, audit_dir=AUDIT_DIR_NAME):
         """ Initializes an :class:`AuditResults` object.
 
         :param str state: The abbreviated name of the state whose senate election is being audited.
         """
         self._state = state
+        self.audit_dir = audit_dir
         if not exists(self.get_audit_dir_name()):
             makedirs('{}/{}'.format(self.get_audit_dir_name(), ROUND_DIR_NAME))
             self.record_audit_info(0, 0)
@@ -53,7 +54,7 @@ class AuditRecorder(object):
         :returns: The audit directory name for the given state.
         :rtype: str
         """
-        return AUDIT_DIR_NAME.format(self._state)
+        return self.audit_dir.format(self._state)
 
     def get_file_path(self, file_name):
         """ Returns the file path for the given file name within the audit directory.

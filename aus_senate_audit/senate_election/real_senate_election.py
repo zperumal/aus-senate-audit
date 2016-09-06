@@ -19,7 +19,7 @@ class RealSenateElection(BaseSenateElection):
     """ Implements a class for representing a real senate election. """
     TYPE = 'Real'
 
-    def __init__(self, seed, state, data_file_path, max_ballots=None):
+    def __init__(self, seed, state, data_file_path, max_ballots=None , audit_recorder=None):
         """ Initializes a :class:`RealSenateElection` object.
 
         :param int seed: The starting value for the random number generator.
@@ -58,9 +58,10 @@ class RealSenateElection(BaseSenateElection):
             = '{}/{}'.format(data_file_path, contest_config['aec-data']['senate-candidates'])
         contest_config['aec-data']['all-candidates'] \
             = '{}/{}'.format(data_file_path, contest_config['aec-data']['all-candidates'])
-        contest_config['aec-data']['formal-preferences'] = AuditRecorder(state).get_file_path(
-            AGGREGATE_BALLOTS_FILE_NAME,
-        )
+        if audit_recorder is None :
+            contest_config['aec-data']['formal-preferences'] = AuditRecorder(state).get_file_path(AGGREGATE_BALLOTS_FILE_NAME,)
+        else:
+            contest_config['aec-data']['formal-preferences'] = audit_recorder.get_file_path(AGGREGATE_BALLOTS_FILE_NAME,)
 
         # Get election data.
         self._data = sc.get_data(input_cls, '', contest_config, **data_options)
